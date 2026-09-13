@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Narrativa EduTransmedia | Motor de Creación & Laboratorio Conceptual</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display (Editorial) & Inter (Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0a0a0c',
+                        surface: '#121216',
+                        surfaceCard: '#1a1a22',
+                        accent: '#d4af37', // Gold / Amber
+                        accentLight: '#f3e5ab',
+                        accentHover: '#b59226',
+                        light: '#f1f1f5',
+                        muted: '#9ca3af',
+                        borderSubtle: 'rgba(212, 175, 55, 0.2)'
+                    },
+                    fontFamily: {
+                        editorial: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0a0a0c;
+            color: #f1f1f5;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .glass-panel {
+            background: rgba(18, 18, 22, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.65);
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 34, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.45);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .input-select, .input-text, .input-textarea {
+            appearance: none;
+            background-color: rgba(10, 10, 12, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            color: #f1f1f5;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.25s ease;
+        }
+
+        .input-select:focus, .input-text:focus, .input-textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+            background-color: rgba(15, 15, 20, 0.9);
+        }
+
+        .input-select option {
+            background-color: #121216;
+            color: #f1f1f5;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Lineas para el Grafo Narrativo */
+        .connector-line {
+            position: absolute;
+            background-color: rgba(212, 175, 55, 0.3);
+            z-index: 0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #22222e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .tab-btn.active {
+            border-bottom: 2px solid #d4af37;
+            color: #d4af37;
+            font-weight: 600;
+            background-color: rgba(212, 175, 55, 0.08);
+        }
+    </style>
+</head>
+<body class="font-sans text-light min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Ambient Background Lights -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-accent/5 rounded-full blur-[150px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 right-0 w-[550px] h-[550px] bg-amber-900/10 rounded-full blur-[170px] pointer-events-none z-0"></div>
+
+    <!-- Toast System -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="glass-panel px-6 py-4 rounded-lg text-sm text-accent border-accent/60 flex items-center shadow-2xl">
+            <svg class="w-5 h-5 mr-3 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span id="toastMessage" class="font-medium">Notificación</span>
+        </div>
+    </div>
+
+    <!-- Navegación -->
+    <nav class="sticky top-0 z-40 bg-dark/90 backdrop-blur-md border-b border-white/10 px-4 md:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-col xl:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('generador')">
+                <span class="w-3 h-3 bg-accent rounded-full animate-pulse"></span>
+                <span class="font-editorial text-xl font-bold tracking-tight text-white">Educa.Tech <span class="text-accent font-light italic">| EduTransmedia</span></span>
+            </div>
+            
+            <div class="flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-xs md:text-sm font-medium text-muted">
+                <button onclick="switchTab('libro')" id="tab-libro" class="tab-btn px-3 py-2 rounded-t transition-colors hover:text-light flex items-center space-x-1.5">
+                    <span>📖</span><span>Índice Scolari</span>
+                </button>
+                <button onclick="switchTab('generador')" id="tab-generador" class="tab-btn active px-3 py-2 rounded-t transition-colors hover:text-light flex items-center space-x-1.5">
+                    <span>🚀</span><span>Generador Prompt</span>
+                </button>
+                <button onclick="switchTab('grafo')" id="tab-grafo" class="tab-btn px-3 py-2 rounded-t transition-colors hover:text-light flex items-center space-x-1.5">
+                    <span>🌲</span><span>Grafo Narrativo</span>
+                </button>
+                <button onclick="switchTab('teoria')" id="tab-teoria" class="tab-btn px-3 py-2 rounded-t transition-colors hover:text-light flex items-center space-x-1.5">
+                    <span>📚</span><span>Biblioteca</span>
+                </button>
+                <button onclick="switchTab('canvas')" id="tab-canvas" class="tab-btn px-3 py-2 rounded-t transition-colors hover:text-light flex items-center space-x-1.5">
+                    <span>🛠️</span><span>Canvas Transmedia</span>
+                </button>
+                <button onclick="switchTab('ecosistema')" id="tab-ecosistema" class="tab-btn px-3 py-2 rounded-t transition-colors hover:text-light flex items-center space-x-1.5">
+                    <span>🌐</span><span>Ecosistema</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="relative z-10 pt-10 pb-8 px-6 md:px-12 max-w-5xl mx-auto text-center">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold uppercase tracking-widest mb-4">
+            <span>Diseño Instruccional & Mundos Transmediales</span>
+        </div>
+        <h1 class="font-editorial text-4xl sm:text-6xl md:text-7xl font-bold mb-4 glow-text tracking-tight">
+            Narrativa<br><span class="font-light italic text-muted">Edu</span>Transmedia
+        </h1>
+        <div class="w-24 h-px bg-accent mx-auto mb-6"></div>
+        <p class="text-base md:text-lg text-muted font-light max-w-3xl mx-auto leading-relaxed">
+            Plataforma interactiva inspirada en la obra de <strong class="text-white">Carlos A. Scolari</strong>. Un puente conceptual hacia la convergencia, el diseño de mundos inmersivos y la optimización de prompts.
+        </p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 flex-grow px-4 md:px-8 w-full max-w-7xl mx-auto mb-20">
+
+        <!-- TAB 0: LIBRO E ÍNDICE OFICIAL -->
+        <section id="sec-libro" class="hidden space-y-8 animate-fade-in">
+            <div class="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs px-2.5 py-0.5 bg-accent/20 border border-accent/40 rounded text-accent font-semibold uppercase">Deusto (2013)</span>
+                    <h2 class="font-editorial text-3xl text-white mt-1">NARRATIVAS TRANSMEDIA: Cuando todos los medios cuentan</h2>
+                    <p class="text-sm text-muted font-light">Explora el índice oficial, créditos editoriales y la estructura completa de los capítulos.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div class="lg:col-span-4 glass-panel p-6 rounded-xl space-y-4">
+                    <div class="bg-black/40 border border-accent/30 p-4 rounded-lg text-center">
+                        <span class="text-xs text-accent uppercase font-semibold block mb-1">Cita Célebre en Portada</span>
+                        <blockquote class="font-editorial italic text-sm text-white/90">
+                            «El transmedia es la cultura producida para la generación que creció mirando Pokémon, Star Wars y He-Man.»
+                        </blockquote>
+                        <span class="text-[10px] text-muted mt-2 block">— Henry Jenkins</span>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-8 glass-panel p-6 sm:p-8 rounded-xl space-y-6">
+                    <div class="w-full">
+                        <input type="text" id="libroIndexFilter" oninput="filtrarIndiceLibro()" placeholder="🔍 Buscar en el índice (ej: matrix, periodismo, prosumidor)..." class="input-text w-full p-3 text-xs">
+                    </div>
+                    
+                    <div id="libroIndexContainer" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                        <!-- Items del índice (Mantenidos del original) -->
+                        <div class="glass-card p-4 rounded-lg border-accent/20 indice-item" data-search="introduccion language is a virus la narrativa el libro">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-editorial text-base text-white font-semibold">Introducción: Language is a virus</h4>
+                                <span class="text-xs text-accent font-mono">Pág. 15</span>
+                            </div>
+                            <p class="text-xs text-muted mt-1">La(s) narrativa(s) (16) • El libro (17)</p>
+                        </div>
+                        
+                        <div class="glass-card p-4 rounded-lg border-accent/20 indice-item" data-search="capitulo 1 que son las narrativas transmedia">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-editorial text-base text-white font-semibold">1. ¿Qué son las narrativas transmedia?</h4>
+                                <span class="text-xs text-accent font-mono ml-3 mt-1">Pág. 21</span>
+                            </div>
+                            <div class="text-xs text-muted mt-2 space-y-1.5">
+                                <p><strong class="text-white/80">1.1. Origen:</strong> Historia de un concepto, Una galaxia semántica, The Matrix, Harry Potter.</p>
+                                <p><strong class="text-white/80">1.2. Identikit:</strong> Según Henry Jenkins, según Jeff Gomez, Una definición.</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4 rounded-lg border-accent/20 indice-item" data-search="capitulo 2 como se producen narrativas transmedia">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-editorial text-base text-white font-semibold">2. ¿Cómo se producen las narrativas transmedia?</h4>
+                                <span class="text-xs text-accent font-mono ml-3 mt-1">Pág. 61</span>
+                            </div>
+                            <div class="text-xs text-muted mt-2 space-y-1.5">
+                                <p><strong class="text-white/80">2.1. Convergencias y productores:</strong> Actores: ¿quién es quién?</p>
+                                <p><strong class="text-white/80">2.2. El proyecto transmedia:</strong> Narrativa, Experiencia, Audiencias, Medios.</p>
+                                <p><strong class="text-white/80">2.3. Ejecución:</strong> Modelos de negocio, La Biblia Transmedia.</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4 rounded-lg border-accent/20 indice-item" data-search="capitulo 5 consumen prosumidor audiencias liquidas comunidades fans">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-editorial text-base text-white font-semibold">5. ¿Cómo se consumen las narrativas transmedia?</h4>
+                                <span class="text-xs text-accent font-mono ml-3 mt-1">Pág. 217</span>
+                            </div>
+                            <div class="text-xs text-muted mt-2 space-y-1.5">
+                                <p><strong class="text-white/80">5.1. Del consumidor al prosumidor:</strong> Audiencias líquidas, Homo prosumator.</p>
+                                <p><strong class="text-white/80">5.2. Comunidades de fans:</strong> Estrategias de contención.</p>
+                                <p><strong class="text-white/80">5.3. Contenidos generados por usuarios:</strong> Sincronizaciones, recapitulaciones.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 1: GENERADOR DE BIBLIA TRANSMEDIA -->
+        <section id="sec-generador" class="space-y-8 animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Controls Panel -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="glass-panel p-6 sm:p-8 rounded-xl">
+                        <h2 class="font-editorial text-2xl text-white mb-2 flex items-center">
+                            <span class="w-2.5 h-2.5 bg-accent rounded-full mr-3"></span>
+                            Matriz Paramétrica
+                        </h2>
+                        <p class="text-xs text-muted mb-6 font-light">Configura la narrativa y selecciona el <strong>marco de ingeniería de prompts</strong>.</p>
+                        
+                        <form id="promptForm" class="space-y-5" onsubmit="event.preventDefault(); generarPrompt();">
+                            
+                            <!-- Prompt Engineering Framework -->
+                            <div class="flex flex-col p-4 bg-accent/5 border border-accent/20 rounded-lg">
+                                <label class="text-xs uppercase tracking-widest text-accent mb-2 font-semibold">0. Arquitectura del Prompt</label>
+                                <select id="marcoPrompt" class="input-select p-3 text-sm cursor-pointer border-accent/50 text-accentLight font-medium">
+                                    <option value="CO-STAR">CO-STAR (Contexto, Objetivo, Estilo, Tono, Audiencia, Respuesta)</option>
+                                    <option value="RISEN">RISEN (Rol, Instrucciones, Pasos, Meta Final, Restricciones)</option>
+                                    <option value="CRAFT">CRAFT (Contexto, Rol, Acción, Formato, Audiencia)</option>
+                                </select>
+                            </div>
+
+                            <!-- Disciplina -->
+                            <div class="flex flex-col">
+                                <label class="text-xs uppercase tracking-widest text-white/70 mb-2 font-semibold">1. Disciplina Principal</label>
+                                <select id="disciplina" class="input-select p-3 text-sm cursor-pointer">
+                                    <option value="Ciencias Sociales y Humanidades">Ciencias Sociales y Humanidades</option>
+                                    <option value="Ciencias Exactas y Tecnología (STEM)">Ciencias Exactas y Tecnología (STEM)</option>
+                                    <option value="Artes Visuales y Diseño">Artes Visuales, Cine y Diseño</option>
+                                </select>
+                            </div>
+
+                            <!-- Tema -->
+                            <div class="flex flex-col">
+                                <label class="text-xs uppercase tracking-widest text-white/70 mb-2 font-semibold">2. Núcleo Temático</label>
+                                <select id="tema" class="input-select p-3 text-sm cursor-pointer">
+                                    <option value="la preservación de la memoria histórica">Preservación de la Memoria Histórica</option>
+                                    <option value="el impacto de la Inteligencia Artificial">Impacto de la IA & Sociedades de Control</option>
+                                    <option value="la sustentabilidad climática">Sustentabilidad y Ecología Profunda</option>
+                                </select>
+                            </div>
+
+                            <!-- Enfoque Pedagógico -->
+                            <div class="flex flex-col">
+                                <label class="text-xs uppercase tracking-widest text-white/70 mb-2 font-semibold">3. Enfoque Pedagógico</label>
+                                <select id="pedagogia" class="input-select p-3 text-sm cursor-pointer">
+                                    <option value="Constructivismo Rizomático">Constructivismo Rizomático (Conocimiento Abierto)</option>
+                                    <option value="Pedagogía Crítica">Pedagogía Crítica (Develación Normativa)</option>
+                                </select>
+                            </div>
+
+                            <!-- Formato Transmedia -->
+                            <div class="flex flex-col">
+                                <label class="text-xs uppercase tracking-widest text-white/70 mb-2 font-semibold">4. Formato de Expansión</label>
+                                <select id="enfoque" class="input-select p-3 text-sm cursor-pointer">
+                                    <option value="Juego de Realidad Alternativa (ARG)">Juego de Realidad Alternativa (ARG)</option>
+                                    <option value="Documental Interactivo (WebDoc)">WebDoc Interactivo + Archivo</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 bg-accent/15 border border-accent text-accent hover:bg-accent hover:text-dark font-sans font-semibold uppercase tracking-wider py-4 rounded-lg transition-all duration-300 text-sm shadow-lg flex items-center justify-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                <span>Generar Prompt Maestro</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Output Display Panel -->
+                <div class="lg:col-span-7 flex flex-col">
+                    <div class="glass-panel p-6 sm:p-8 rounded-xl flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                                <h2 class="font-editorial text-2xl text-white flex items-center">
+                                    Instrucción Estructurada (LLM)
+                                </h2>
+                                <span id="outputBadge" class="text-xs px-2.5 py-1 bg-white/5 border border-white/10 rounded-md text-muted">Borrador vacío</span>
+                            </div>
+
+                            <div id="outputArea" class="min-h-[420px] flex flex-col justify-center items-center text-center p-6 border border-dashed border-white/10 rounded-lg">
+                                <span class="text-5xl font-editorial text-muted opacity-30 mb-4 italic">"Reduciendo la entropía..."</span>
+                                <p class="text-muted font-light text-sm max-w-md leading-relaxed">
+                                    Selecciona el marco arquitectónico y los parámetros para generar un prompt de alta densidad de información.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Action bar -->
+                        <div id="outputActions" class="hidden border-t border-white/10 pt-4 mt-6 flex flex-wrap items-center justify-between gap-4">
+                            <span class="text-xs text-muted italic">Optimizado para Gemini, Claude y ChatGPT.</span>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="copiarTexto()" class="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-accent border border-accent/40 rounded-md hover:bg-accent hover:text-dark transition-all flex items-center">
+                                    Copiar Prompt Completo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: GRAFO NARRATIVO -->
+        <section id="sec-grafo" class="hidden space-y-6 animate-fade-in">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="font-editorial text-3xl text-white">Grafo de Arquitectura Transmedia</h2>
+                <p class="text-sm text-muted font-light mt-1">Representación visual del flujo de la audiencia a través de las expansiones de la Biblia Transmedia.</p>
+            </div>
+            
+            <div class="glass-panel p-8 rounded-xl relative overflow-hidden min-h-[500px] flex flex-col items-center justify-start pt-12">
+                
+                <!-- Nodo Principal -->
+                <div class="glass-card px-8 py-4 rounded-xl border-accent shadow-[0_0_20px_rgba(212,175,55,0.2)] z-10 w-64 text-center cursor-pointer hover:scale-105 transition-transform" onclick="showToast('Nave Nodriza: El punto de entrada principal donde se define el Lore.')">
+                    <span class="text-[10px] uppercase text-accent font-bold tracking-widest block mb-1">Nave Nodriza</span>
+                    <h3 class="font-editorial text-xl text-white">WebDoc / Serie Web</h3>
+                </div>
+
+                <!-- Línea vertical principal -->
+                <div class="w-px h-12 bg-accent/40 z-0"></div>
+
+                <!-- Bifurcación -->
+                <div class="w-[600px] h-px bg-accent/40 z-0 relative">
+                    <div class="absolute left-0 top-0 w-px h-8 bg-accent/40"></div>
+                    <div class="absolute left-1/2 top-0 w-px h-8 bg-accent/40"></div>
+                    <div class="absolute right-0 top-0 w-px h-8 bg-accent/40"></div>
+                </div>
+
+                <!-- Nodos Secundarios -->
+                <div class="flex justify-between w-[640px] pt-8 z-10 relative">
+                    <!-- Nodo A -->
+                    <div class="glass-card px-4 py-4 rounded-xl border-white/20 w-48 text-center cursor-pointer hover:border-accent transition-colors" onclick="showToast('Rabbit Hole: Punto de entrada enigmático para atraer a prosumidores.')">
+                        <span class="text-[10px] uppercase text-white/50 block mb-1">Rabbit Hole</span>
+                        <h4 class="text-sm font-semibold text-white">Campaña ARG (Redes)</h4>
+                        <p class="text-[10px] text-muted mt-2">Pistas escondidas en Instagram.</p>
+                    </div>
+
+                    <!-- Nodo B -->
+                    <div class="glass-card px-4 py-4 rounded-xl border-white/20 w-48 text-center cursor-pointer hover:border-accent transition-colors" onclick="showToast('Expansión Narrativa: Cuenta una historia paralela (Principio de No Redundancia).')">
+                        <span class="text-[10px] uppercase text-white/50 block mb-1">Expansión</span>
+                        <h4 class="text-sm font-semibold text-white">Podcast Interactivo</h4>
+                        <p class="text-[10px] text-muted mt-2">Historia secundaria en audio.</p>
+                    </div>
+
+                    <!-- Nodo C -->
+                    <div class="glass-card px-4 py-4 rounded-xl border-white/20 w-48 text-center cursor-pointer hover:border-accent transition-colors" onclick="showToast('Espacio Comunitario: Donde la inteligencia colectiva se reúne.')">
+                        <span class="text-[10px] uppercase text-white/50 block mb-1">Comunidad</span>
+                        <h4 class="text-sm font-semibold text-white">Servidor Discord</h4>
+                        <p class="text-[10px] text-muted mt-2">Teorías y creación de fans.</p>
+                    </div>
+                </div>
+
+                <!-- Feedback del Prosumidor -->
+                <div class="mt-16 flex flex-col items-center z-10">
+                    <div class="w-px h-16 border-l border-dashed border-accent/40"></div>
+                    <div class="glass-card px-6 py-3 rounded-full border-accent/40 bg-accent/5 flex items-center space-x-2 mt-4 cursor-help">
+                        <span class="text-xl">🔄</span>
+                        <span class="text-sm font-semibold text-accent">Retroalimentación del Prosumidor</span>
+                    </div>
+                    <p class="text-xs text-muted mt-3 text-center max-w-sm">Los usuarios toman el contenido del podcast y el ARG y crean su propio canon en el espacio comunitario.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: BIBLIOTECA TEÓRICA -->
+        <section id="sec-teoria" class="hidden space-y-8 animate-fade-in">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="font-editorial text-3xl md:text-4xl text-white mb-1">Laboratorio de Cimientos Teóricos</h2>
+                    <p class="text-sm text-muted font-light">Explora la galaxia semántica, teorías narrativas y arquitecturas de control semántico para LLMs.</p>
+                </div>
+                <div class="w-full md:w-72">
+                    <input type="text" id="teoriaFilter" oninput="filtrarTeoria()" placeholder="🔍 Buscar autor o concepto..." class="input-text w-full p-2.5 text-xs">
+                </div>
+            </div>
+
+            <div id="teoriaCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="glass-card p-6 rounded-xl flex flex-col justify-between teoria-card border-accent/50 bg-accent/5" data-keywords="prompt engineering entropia co-star risen craft">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-semibold tracking-widest text-accent uppercase">Ingeniería de Prompts</span>
+                            <span class="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded border border-accent/40 animate-pulse">Nuevo Marco</span>
+                        </div>
+                        <h3 class="font-editorial text-xl text-white mb-3">Control Semántico & Reducción de Entropía</h3>
+                        <p class="text-sm text-muted font-light leading-relaxed mb-4">
+                            La arquitectura de prompts delimita el espacio latente del modelo autorregresivo, forzando una distribución de alta densidad de información que evita imprecisiones.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-xl flex flex-col justify-between teoria-card" data-keywords="scolari galaxia semantica expansion no redundancia">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-semibold tracking-widest text-white/50 uppercase">Carlos A. Scolari</span>
+                        </div>
+                        <h3 class="font-editorial text-xl text-white mb-3">La Galaxia Semántica & Expansión</h3>
+                        <p class="text-sm text-muted font-light leading-relaxed mb-4">
+                            Scolari demuestra que el transmedia no es adaptación, sino un universo donde cada plataforma aporta una pieza indispensable (Principio de No Redundancia).
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 rounded-xl flex flex-col justify-between teoria-card" data-keywords="jenkins convergencia prosumidor cazadores">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-semibold tracking-widest text-white/50 uppercase">Henry Jenkins</span>
+                        </div>
+                        <h3 class="font-editorial text-xl text-white mb-3">Cazadores y Prosumidores</h3>
+                        <p class="text-sm text-muted font-light leading-relaxed mb-4">
+                            Las audiencias son "cazadoras de información" reconstruyendo colaborativamente el universo mediante la Inteligencia Colectiva.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: CANVAS TRANSMEDIA -->
+        <section id="sec-canvas" class="hidden space-y-6 animate-fade-in">
+            <div class="flex justify-between items-end border-b border-white/10 pb-4">
+                <div>
+                    <h2 class="font-editorial text-3xl text-white">Transmedia Design Canvas</h2>
+                    <p class="text-sm text-muted font-light mt-1">Lienzo de trabajo para diseñar la biblia de tu proyecto educativo interactivo. Campos editables.</p>
+                </div>
+                <button onclick="showToast('Canvas guardado localmente (Simulación).')" class="px-4 py-2 bg-accent/20 text-accent border border-accent/40 rounded hover:bg-accent hover:text-dark transition-colors text-sm font-semibold">
+                    💾 Guardar Proyecto
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Core -->
+                <div class="glass-card p-4 rounded-lg col-span-1 md:col-span-3 lg:col-span-4 border-t-2 border-t-accent">
+                    <label class="text-[10px] uppercase tracking-widest text-accent font-bold">1. Mito Fundacional / Premisa</label>
+                    <textarea class="w-full bg-transparent border-none text-white text-sm mt-2 focus:ring-0 resize-none h-16 outline-none" placeholder="Escribe aquí de qué trata el universo, las reglas del mundo y el conflicto principal..."></textarea>
+                </div>
+
+                <div class="glass-card p-4 rounded-lg md:col-span-1 lg:col-span-2 border-l-2 border-l-blue-400">
+                    <label class="text-[10px] uppercase tracking-widest text-blue-400 font-bold">2. Plataformas (Core)</label>
+                    <textarea class="w-full bg-transparent border-none text-white text-sm mt-2 focus:ring-0 resize-none h-24 outline-none" placeholder="¿Cuál es la nave nodriza? (Ej: Serie web, Videojuego base)"></textarea>
+                </div>
+
+                <div class="glass-card p-4 rounded-lg md:col-span-2 lg:col-span-2 border-l-2 border-l-green-400">
+                    <label class="text-[10px] uppercase tracking-widest text-green-400 font-bold">3. Expansiones & Rabbit Holes</label>
+                    <textarea class="w-full bg-transparent border-none text-white text-sm mt-2 focus:ring-0 resize-none h-24 outline-none" placeholder="Libros, perfiles falsos en redes, podcast complementario..."></textarea>
+                </div>
+
+                <div class="glass-card p-4 rounded-lg md:col-span-1 lg:col-span-2 border-l-2 border-l-purple-400">
+                    <label class="text-[10px] uppercase tracking-widest text-purple-400 font-bold">4. Audiencia y Prosumidores</label>
+                    <textarea class="w-full bg-transparent border-none text-white text-sm mt-2 focus:ring-0 resize-none h-24 outline-none" placeholder="¿Quiénes son? ¿Qué se espera que hagan con el contenido?"></textarea>
+                </div>
+
+                <div class="glass-card p-4 rounded-lg md:col-span-2 lg:col-span-2 border-l-2 border-l-pink-400">
+                    <label class="text-[10px] uppercase tracking-widest text-pink-400 font-bold">5. Mecánicas de Participación</label>
+                    <textarea class="w-full bg-transparent border-none text-white text-sm mt-2 focus:ring-0 resize-none h-24 outline-none" placeholder="Gamificación, co-creación de historias, resolución de puzzles (ARG)..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: ECOSISTEMA -->
+        <section id="sec-ecosistema" class="hidden space-y-6 animate-fade-in">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="font-editorial text-3xl text-white">Ecosistema de Plataformas</h2>
+                <p class="text-sm text-muted font-light mt-1">Inventario técnico de los medios utilizados para diseminar la narrativa y sus roles según Scolari.</p>
+            </div>
+
+            <div class="overflow-x-auto glass-panel rounded-xl">
+                <table class="w-full text-left text-sm text-light">
+                    <thead class="bg-surfaceCard border-b border-white/10 text-xs uppercase text-accent font-semibold">
+                        <tr>
+                            <th class="px-6 py-4">Plataforma / Medio</th>
+                            <th class="px-6 py-4">Rol Transmedial</th>
+                            <th class="px-6 py-4">Aporte al Lore (No Redundante)</th>
+                            <th class="px-6 py-4 text-center">Nivel Inmersión</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="px-6 py-4 font-medium flex items-center gap-2"><span class="text-xl">🌐</span> WebDoc Principal</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-blue-900/30 text-blue-300 rounded text-xs border border-blue-800/50">Nave Nodriza</span></td>
+                            <td class="px-6 py-4 text-muted">Establece el conflicto principal y presenta a los personajes centrales del módulo educativo.</td>
+                            <td class="px-6 py-4 text-center text-accent">⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="px-6 py-4 font-medium flex items-center gap-2"><span class="text-xl">📱</span> Instagram (Cuenta Ficticia)</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-purple-900/30 text-purple-300 rounded text-xs border border-purple-800/50">Rabbit Hole / Cebo</span></td>
+                            <td class="px-6 py-4 text-muted">Atrae estudiantes mediante pistas ocultas (ARG) antes de lanzar el WebDoc oficial.</td>
+                            <td class="px-6 py-4 text-center text-accent">⭐⭐</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="px-6 py-4 font-medium flex items-center gap-2"><span class="text-xl">🎙️</span> Podcast Episódico</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-green-900/30 text-green-300 rounded text-xs border border-green-800/50">Expansión Periférica</span></td>
+                            <td class="px-6 py-4 text-muted">Narra la historia desde la perspectiva del "villano" o de un personaje secundario en formato audio.</td>
+                            <td class="px-6 py-4 text-center text-accent">⭐⭐⭐</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="px-6 py-4 font-medium flex items-center gap-2"><span class="text-xl">🎮</span> Foro / Discord</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-amber-900/30 text-amber-300 rounded text-xs border border-amber-800/50">Ágora / Prosumidor</span></td>
+                            <td class="px-6 py-4 text-muted">Lugar para que la inteligencia colectiva resuelva los acertijos y comparta fan-fiction.</td>
+                            <td class="px-6 py-4 text-center text-accent">⭐⭐⭐⭐⭐</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Toast System
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            if (toast && toastMsg) {
+                toastMsg.innerText = message;
+                toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100');
+                    toast.classList.add('translate-y-[-100px]', 'opacity-0');
+                }, 3200);
+            }
+        }
+
+        function switchTab(tabId) {
+            const tabs = ['libro', 'generador', 'grafo', 'teoria', 'canvas', 'ecosistema'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`sec-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (sec && btn) {
+                    if (t === tabId) {
+                        sec.classList.remove('hidden');
+                        btn.classList.add('active');
+                    } else {
+                        sec.classList.add('hidden');
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filtrarIndiceLibro() {
+            const query = document.getElementById('libroIndexFilter').value.toLowerCase().trim();
+            const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const queryNormalized = normalize(query);
+            
+            const items = document.querySelectorAll('.indice-item');
+            
+            items.forEach(item => {
+                const searchData = item.getAttribute('data-search') || '';
+                const itemText = normalize(item.innerText.toLowerCase());
+                
+                if (searchData.includes(queryNormalized) || itemText.includes(queryNormalized)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function filtrarTeoria() {
+            const query = document.getElementById('teoriaFilter').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.teoria-card');
+            
+            cards.forEach(card => {
+                const keywords = card.getAttribute('data-keywords') || '';
+                const cardText = card.innerText.toLowerCase();
+                if (keywords.includes(query) || cardText.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // ====== MOTOR GENERADOR BASADO EN ESTRUCTURAS DE PROMPTING ======
+        function generarPrompt() {
+            const marco = document.getElementById('marcoPrompt').value;
+            const disciplina = document.getElementById('disciplina').value;
+            const tema = document.getElementById('tema').value;
+            const pedagogia = document.getElementById('pedagogia').value;
+            const enfoque = document.getElementById('enfoque').value;
+
+            let promptText = "";
+
+            if (marco === "CO-STAR") {
+                promptText = `[MARCO DE INGENIERÍA: CO-STAR]\n\nC (Contexto): Estamos desarrollando el proyecto "Narrativa EduTransmedia", anclado en la disciplina de ${disciplina}. El núcleo temático aborda ${tema}.\nO (Objetivo): Diseñar la "Biblia Transmedia" (siguiendo a Carlos A. Scolari), garantizando el principio de No Redundancia.\nS (Estilo): Riguroso, analítico y creativo.\nT (Tono): Visionario, altamente profesional y motivador.\nA (Audiencia): Productores audiovisuales, diseñadores interactivos y educadores.\nR (Respuesta/Formato): Devuelve un documento estructurado en 4 secciones claras:\n  1. NAVE NODRIZA: Premisa narrativa.\n  2. MAPA DE CONVERGENCIA: Expansión focalizada en ${enfoque}.\n  3. CULTURA PARTICIPATIVA: Rol del prosumidor (Henry Jenkins).\n  4. PRAXIS PEDAGÓGICA: Sistema de evaluación bajo el enfoque de ${pedagogia}.`;
+            } 
+            else if (marco === "RISEN") {
+                promptText = `[MARCO DE INGENIERÍA: RISEN]\n\nR (Rol): Actúa como Director de Arte Transmedia y Diseñador Instruccional Senior.\nI (Instrucciones): Desarrolla la arquitectura narrativa y pedagógica de un universo transmedia enfocado en ${disciplina}, cuyo conflicto central es ${tema}.\nS (Pasos a ejecutar):\n  1. Define la Nave Nodriza (Reglas del mundo).\n  2. Construye el ecosistema integrando ${enfoque}.\n  3. Establece la estrategia de transición de usuario a prosumidor.\n  4. Formula la matriz de evaluación basada en ${pedagogia}.\nE (End Goal): Entregar una Biblia Transmedia lista para ejecutar.\nN (Normas): Prohibido repetir la misma historia en diferentes medios. Lenguaje técnico (Scolari/Jenkins). Máximo 1500 palabras.`;
+            }
+            else if (marco === "CRAFT") {
+                promptText = `[MARCO DE INGENIERÍA: CRAFT]\n\nC (Contexto): Producción de un activo educativo inmersivo para la enseñanza de ${disciplina} abordando ${tema}.\nR (Rol): Diseñador de Experiencias Transmedia.\nA (Acción): Redactar los cimientos de la Biblia Transmedia integrando el modelo de ${pedagogia}.\nF (Formato): Documento arquitectónico persuasivo, con viñetas, secciones delimitadas (Nave Nodriza, Medios, Prosumidor, Evaluación) enfocado en ${enfoque}.\nT (Target / Audiencia): Estudiantes contemporáneos y docentes que requieren estímulos de convergencia mediática.`;
+            }
+
+            const outputArea = document.getElementById('outputArea');
+            const outputBadge = document.getElementById('outputBadge');
+            const outputActions = document.getElementById('outputActions');
+
+            outputArea.className = "text-left p-6 bg-black/50 border border-accent/30 rounded-lg overflow-y-auto max-h-[500px] font-mono text-[13px] text-accentLight/90 space-y-4 leading-relaxed whitespace-pre-wrap";
+            outputArea.innerText = promptText;
+            
+            outputBadge.className = "text-xs px-2.5 py-1 bg-accent/20 border border-accent/40 rounded-md text-accent font-semibold";
+            outputBadge.innerText = `Prompt Generado (${marco})`;
+
+            outputActions.classList.remove('hidden');
+            showToast(`Estructura ${marco} aplicada con éxito.`);
+        }
+
+        function copiarTexto() {
+            const outputArea = document.getElementById('outputArea');
+            if (!outputArea) return;
+            const textToCopy = outputArea.innerText;
+
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Prompt copiado al portapapeles.");
+            } catch (err) {
+                console.error("Error al copiar", err);
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
