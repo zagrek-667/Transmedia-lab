@@ -1,125 +1,300 @@
-<!-- TAB 6: CANVAS TRANSMEDIA (OPTIMIZADO CON EXPORTACIÓN MULTIMODAL Y PRESETS) -->
-<section id="sec-canvas" class="hidden space-y-6 animate-fade-in">
-    <div class="glass-panel p-6 rounded-xl">
-        <!-- Encabezado con Indicador de Guardado y Presets -->
-        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between border-b border-white/10 pb-5 mb-6 gap-4">
+// --- FUNCIONES DEL CANVAS: AUTOGUARDADO, PRESETS, PROMPTS Y EXPORTACIÓN HTML ---
+
+function autoGuardarCanvas() {
+    const data = {
+        lore: document.getElementById('canvas-lore').value,
+        hub: document.getElementById('canvas-hub').value,
+        canales: document.getElementById('canvas-canales').value,
+        prosumidor: document.getElementById('canvas-prosumidor').value,
+        pedagogia: document.getElementById('canvas-pedagogia').value,
+        evaluacion: document.getElementById('canvas-evaluacion').value
+    };
+    try {
+        localStorage.setItem('edutransmedia_canvas_data', JSON.stringify(data));
+        const badge = document.getElementById('canvas-save-status');
+        if (badge) {
+            badge.textContent = "● Guardado local";
+            badge.className = "text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        }
+    } catch(e) {
+        console.warn("No se pudo autoguardar en localStorage", e);
+    }
+}
+
+function cargarGuardadoCanvas() {
+    try {
+        const saved = localStorage.getItem('edutransmedia_canvas_data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            if (data.lore !== undefined) document.getElementById('canvas-lore').value = data.lore;
+            if (data.hub !== undefined) document.getElementById('canvas-hub').value = data.hub;
+            if (data.canales !== undefined) document.getElementById('canvas-canales').value = data.canales;
+            if (data.prosumidor !== undefined) document.getElementById('canvas-prosumidor').value = data.prosumidor;
+            if (data.pedagogia !== undefined) document.getElementById('canvas-pedagogia').value = data.pedagogia;
+            if (data.evaluacion !== undefined) document.getElementById('canvas-evaluacion').value = data.evaluacion;
+        }
+    } catch(e) {}
+}
+
+const canvasPresets = {
+    'YERMO': {
+        lore: "Las ciudades refugio son la constante en un mundo posapocalíptico; la inmensa naturaleza ya no existe y todo se ha tornado en un yermo donde escasea críticamente el agua. La subsistencia depende de un delicado equilibrio entre tecnología de reciclaje y recursos sintetizados.",
+        hub: "Web interactiva central: simulador de supervivencia y mapa de navegación diegética donde el usuario monitorea indicadores de agua, recursos y registros de expedición.",
+        canales: "1. Coaching táctico: sesiones guiadas de toma de decisiones y resolución de problemas éticos.\n2. Podcast de supervivencia: diarios sonoros interceptados de expedicionarios en el yermo.\n3. Serie web en YouTube: ventanas audiovisuales que ilustran las consecuencias de las rutas tomadas.",
+        prosumidor: "La audiencia toma decisiones éticas clave junto al personaje protagonista mientras se moviliza por distintos escenarios. El respeto a la naturaleza y la preservación de recursos determinan el éxito de la misión. Quienes tomen las decisiones correctas acceden a un componente en polvo que permite hidratarse y alimentarse en el desierto.",
+        pedagogia: "Modelo pedagógico multimodal con articulación entre la ficción y problemáticas socioambientales contemporáneas. Desarrollo de competencias: Lectura crítica, Pensamiento complejo, Análisis de caso, Comprensión lectora multidimensional y Escritura creativa situada.",
+        evaluacion: "Toma de conciencia comunitaria a partir de la extrapolación prospectiva entre el desarrollo histórico humano y los futuros posibles (rutas sustentables vs. escenarios de colapso apocalíptico). Evaluación por portafolio de decisiones y justificaciones éticas."
+    },
+    'PANOPTICA': {
+        lore: "En una metrópolis donde el Panóptico de Cristal predice y normaliza las conductas ciudadanas, surgen 'anomalías' humanas que reclaman su derecho a la opacidad, la incertidumbre y el error frente al determinismo algorítmico.",
+        hub: "Terminal Web simulada: consola de vigilancia estatal donde la audiencia audita perfiles de ciudadanos y descubre brechas en el código del sistema.",
+        canales: "1. Podcast Binaural (La Interferencia): audios clandestinos de la resistencia.\n2. ARG Urbano (La Falla): geocaching y códigos QR en espacios públicos reales.",
+        prosumidor: "Operadores de datos que deciden si reportar o proteger a los ciudadanos disidentes, inyectando sesgos humanistas o corrompiendo la base de datos central.",
+        pedagogia: "Educación por experiencia (Javier Echeverría - Tercer Entorno) y Sociedades de Control (Deleuze). Competencias en alfabetización algorítmica, pensamiento crítico y soberanía digital.",
+        evaluacion: "Análisis de decisiones éticas frente a la privacidad y auditoría de algoritmos. Métricas de 'Resistencia Sistémica' acumuladas comunitariamente."
+    },
+    'MEMORIA': {
+        lore: "En una sociedad en rápida transición digital que amenaza con borrar los archivos analógicos y las voces comunitarias, un colectivo de historiadores nómadas rescata testimonios orales antes de que desaparezcan.",
+        hub: "Repositorio web abierto e interactivo con mapas cartográficos de memoria oral y archivos sonoros comunitarios.",
+        canales: "1. Micro-cápsulas sonoras en plataformas de audio.\n2. Fanzines y afiches impresos con realidad aumentada en bibliotecas y casas de cultura.\n3. Talleres comunitarios de escritura testimonial.",
+        prosumidor: "Estudiantes y ciudadanos recopilan testimonios de adultos mayores en sus barrios, redactan crónicas y las suben a la cartografía viva del proyecto.",
+        pedagogia: "Pedagogía de la memoria y aprendizaje-servicio. Competencias de empatía histórica, investigación cualitativa, producción textual y análisis crítico del discurso.",
+        evaluacion: "Rúbrica de rigor ético en la recopilación testimonial, pertinencia social del relato y coevaluación participativa con la comunidad informante."
+    }
+};
+
+function cargarPresetCanvas(tipo) {
+    const p = canvasPresets[tipo];
+    if (!p) return;
+    document.getElementById('canvas-lore').value = p.lore;
+    document.getElementById('canvas-hub').value = p.hub;
+    document.getElementById('canvas-canales').value = p.canales;
+    document.getElementById('canvas-prosumidor').value = p.prosumidor;
+    document.getElementById('canvas-pedagogia').value = p.pedagogia;
+    document.getElementById('canvas-evaluacion').value = p.evaluacion;
+    autoGuardarCanvas();
+    showToast(`Plantilla "${tipo}" cargada en el Canvas.`);
+}
+
+function importarCanvasJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.lore !== undefined) document.getElementById('canvas-lore').value = data.lore;
+            if (data.hub !== undefined) document.getElementById('canvas-hub').value = data.hub;
+            if (data.canales !== undefined) document.getElementById('canvas-canales').value = data.canales;
+            if (data.prosumidor !== undefined) document.getElementById('canvas-prosumidor').value = data.prosumidor;
+            if (data.pedagogia !== undefined) document.getElementById('canvas-pedagogia').value = data.pedagogia;
+            if (data.evaluacion !== undefined) document.getElementById('canvas-evaluacion').value = data.evaluacion;
+            autoGuardarCanvas();
+            showToast("Proyecto JSON importado correctamente.");
+        } catch(err) {
+            alert("Error al leer el archivo JSON: formato inválido.");
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function generarSystemPromptCanvas() {
+    const lore = document.getElementById('canvas-lore').value.trim() || 'No especificado';
+    const hub = document.getElementById('canvas-hub').value.trim() || 'No especificado';
+    const canales = document.getElementById('canvas-canales').value.trim() || 'No especificado';
+    const prosumidor = document.getElementById('canvas-prosumidor').value.trim() || 'No especificado';
+    const pedagogia = document.getElementById('canvas-pedagogia').value.trim() || 'No especificado';
+    const evaluacion = document.getElementById('canvas-evaluacion').value.trim() || 'No especificado';
+
+    return `# SYSTEM PROMPT & INSTRUCCIÓN MAESTRA: DISEÑADOR TRANSMEDIA EDUCATIVO
+
+## IDENTIDAD Y ROL
+Eres un Diseñador Instruccional Senior y Arquitecto de Universos Transmedia especializado en Pedagogía Crítica, Cibercultura y Diseño de Experiencias Inmersivas (fundamentado en Carlos Scolari, Henry Jenkins, Javier Echeverría y Gilles Deleuze).
+Tu objetivo es formalizar, expandir y profundizar la arquitectura del siguiente proyecto transmedia educativo.
+
+---
+
+## PARÁMETROS DEL PROYECTO (CANVAS DE DISEÑO)
+
+### 1. NÚCLEO ONTOLÓGICO Y LORE FUNDACIONAL:
+${lore}
+
+### 2. NAVE NODRIZA (HUB CENTRAL DE CONVERGENCIA):
+${hub}
+
+### 3. CANALES SECUNDARIOS Y NODOS EXPANSIVOS:
+${canales}
+
+### 4. ROL DEL PROSUMIDOR Y DINÁMICA DE AGENCIA:
+${prosumidor}
+
+### 5. ANCLAJE PEDAGÓGICO, COMPETENCIAS Y TEORÍAS:
+${pedagogia}
+
+### 6. EVALUACIÓN AUTÉNTICA, IMPACTO FORMATIVO Y EXPANSIÓN:
+${evaluacion}
+
+---
+
+## DIRECTRICES OPERATIVAS:
+1. Expansión No-Redundante: Cada medio del ecosistema debe ofrecer una pieza de información exclusiva; ningún nodo debe ser mera adaptación lineal de otro.
+2. Aprendizaje Situado y Ficción Crítica: Conecta constantemente los dilemas éticos y mecánicas del mundo ficticio con tensiones históricas y problemas contemporáneos de la realidad.
+3. Gradación de Participación: Detalla cómo transita la audiencia desde el consumo crítico inicial hasta la creación autónoma (prosumo).
+4. Entregables Esperados: Genera la Biblia Transmedia estructurada, guías de mediación didáctica y rúbricas de evaluación por desempeño.`;
+}
+
+function copiarSystemPromptCanvas() {
+    const promptText = generarSystemPromptCanvas();
+    navigator.clipboard.writeText(promptText).then(() => {
+        showToast("System Prompt copiado al portapapeles.");
+    }).catch(() => {
+        showToast("Copia fallida. Utiliza la opción 'Descargar Prompt (.md)'.");
+    });
+}
+
+function descargarSystemPromptCanvas() {
+    const promptText = generarSystemPromptCanvas();
+    const blob = new Blob([promptText], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", url);
+    dlAnchor.setAttribute("download", "system_prompt_transmedia.md");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    URL.revokeObjectURL(url);
+    showToast("System Prompt descargado (.md).");
+}
+
+function descargarProyectoHTMLCanvas() {
+    const lore = document.getElementById('canvas-lore').value.trim() || 'Sin definir';
+    const hub = document.getElementById('canvas-hub').value.trim() || 'Sin definir';
+    const canales = document.getElementById('canvas-canales').value.trim() || 'Sin definir';
+    const prosumidor = document.getElementById('canvas-prosumidor').value.trim() || 'Sin definir';
+    const pedagogia = document.getElementById('canvas-pedagogia').value.trim() || 'Sin definir';
+    const evaluacion = document.getElementById('canvas-evaluacion').value.trim() || 'Sin definir';
+
+    function esc(t) {
+        return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    const standaloneHTML = `<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto EduTransmedia | Expediente de Diseño</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #0a0a0c; color: #f1f1f5; font-family: 'Inter', sans-serif; }
+        .font-editorial { font-family: 'Playfair Display', serif; }
+        .glass-panel { background: rgba(18, 18, 22, 0.92); backdrop-filter: blur(16px); border: 1px solid rgba(212, 175, 55, 0.25); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.65); }
+        .glass-card { background: rgba(26, 26, 34, 0.78); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.25s ease; }
+        .glass-card:hover { border-color: rgba(212, 175, 55, 0.45); transform: translateY(-2px); }
+        @media print {
+            body { background: #ffffff !important; color: #111827 !important; }
+            .glass-panel, .glass-card { background: #ffffff !important; border: 1px solid #e5e7eb !important; color: #111827 !important; box-shadow: none !important; }
+            .no-print { display: none !important; }
+            .text-gray-400 { color: #4b5563 !important; }
+            h1, h2, h3, h4 { color: #111827 !important; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10 max-w-6xl mx-auto space-y-8 min-h-screen flex flex-col justify-between">
+    <div class="space-y-8">
+        <header class="glass-panel p-6 md:p-8 rounded-2xl border-l-4 border-l-[#d4af37] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2.5 h-2.5 bg-accent rounded-full shadow-[0_0_8px_#d4af37]"></span>
-                    <h2 class="font-editorial text-2xl text-white">Transmedia Planning Canvas</h2>
-                    <span id="canvas-save-status" class="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">● Autoguardado activo</span>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-2.5 py-0.5 rounded text-[11px] font-mono uppercase tracking-wider bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/40">Expediente Autocontenido</span>
+                    <span class="text-xs text-gray-400">EduTransmedia &bull; Diseño Pedagógico</span>
                 </div>
-                <p class="text-xs text-muted font-light">Matriz didáctica para estructurar universos transmedia educativos. Completa los campos o selecciona un arquetipo pedagógico.</p>
+                <h1 class="font-editorial text-3xl md:text-4xl text-white">Arquitectura de Ecosistema Narrativo</h1>
+                <p class="text-xs md:text-sm text-gray-400 mt-1 max-w-2xl">Plano maestro generado desde el Transmedia Planning Canvas.</p>
             </div>
-
-            <!-- Selector de Plantillas Rápidas -->
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="text-[11px] uppercase tracking-wider text-muted font-mono">Plantillas:</span>
-                <button type="button" onclick="cargarPresetCanvas('YERMO')" class="px-2.5 py-1 text-xs bg-amber-500/15 border border-amber-500/30 text-amber-300 rounded hover:bg-amber-500/25 transition-all flex items-center gap-1">
-                    <span>🏜️</span> Yermo & Refugio
-                </button>
-                <button type="button" onclick="cargarPresetCanvas('PANOPTICA')" class="px-2.5 py-1 text-xs bg-rose-500/15 border border-rose-500/30 text-rose-300 rounded hover:bg-rose-500/25 transition-all flex items-center gap-1">
-                    <span>👁️</span> Panóptica (Vigilancia)
-                </button>
-                <button type="button" onclick="cargarPresetCanvas('MEMORIA')" class="px-2.5 py-1 text-xs bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 rounded hover:bg-cyan-500/25 transition-all flex items-center gap-1">
-                    <span>📜</span> Memoria & DDHH
+            <div class="no-print">
+                <button onclick="window.print()" class="px-4 py-2 bg-[#d4af37] text-black font-semibold text-xs rounded-lg hover:bg-[#b59226] transition-all flex items-center gap-1.5 shadow-lg shadow-[#d4af37]/15">
+                    🖨️ Imprimir / Guardar PDF
                 </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Barra de Acciones de Exportación e Importación -->
-        <div class="flex flex-wrap items-center justify-between bg-white/[0.02] border border-white/5 p-3 rounded-lg mb-6 gap-3">
-            <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="exportarCanvasJSON()" class="px-3 py-1.5 text-xs bg-accent/20 border border-accent/40 text-accent rounded hover:bg-accent/30 transition-colors flex items-center gap-1.5">
-                    💾 Exportar JSON
-                </button>
-                
-                <label class="px-3 py-1.5 text-xs bg-white/5 border border-white/15 text-light rounded hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-1.5">
-                    📥 Importar JSON
-                    <input type="file" id="canvas-import-input" accept=".json" class="hidden" onchange="importarCanvasJSON(event)">
-                </label>
-
-                <button type="button" onclick="copiarSystemPromptCanvas()" class="px-3 py-1.5 text-xs bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded hover:bg-purple-500/30 transition-colors flex items-center gap-1.5">
-                    📋 Copiar System Prompt
-                </button>
-
-                <button type="button" onclick="descargarSystemPromptCanvas()" class="px-3 py-1.5 text-xs bg-purple-500/20 border border-purple-500/40 text-purple-200 rounded hover:bg-purple-500/30 transition-colors flex items-center gap-1.5">
-                    📄 Descargar Prompt (.md)
-                </button>
-
-                <button type="button" onclick="descargarProyectoHTMLCanvas()" class="px-3.5 py-1.5 text-xs bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-medium rounded hover:bg-emerald-500/30 transition-all shadow-[0_0_12px_rgba(16,185,129,0.15)] flex items-center gap-1.5">
-                    🌐 Descargar Proyecto (.html)
-                </button>
-            </div>
-
-            <div>
-                <button type="button" onclick="limpiarCanvas()" class="px-3 py-1.5 text-xs bg-rose-500/10 border border-rose-500/20 text-rose-300/80 rounded hover:bg-rose-500/20 transition-colors flex items-center gap-1">
-                    🗑️ Limpiar
-                </button>
-            </div>
-        </div>
-
-        <!-- Matriz de Cuadrantes con Andamiaje Pedagógico -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- 1. Lore & Mito Base -->
-            <div class="glass-card p-4 rounded-lg flex flex-col border border-accent/20 bg-accent/[0.02]">
-                <div class="flex items-center justify-between mb-1">
-                    <h4 class="text-xs font-bold uppercase text-accent tracking-wide">1. Lore & Mito Base</h4>
-                    <span class="text-[10px] font-mono text-muted">Diégesis</span>
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="glass-card p-6 rounded-xl border-t-2 border-t-[#d4af37]">
+                <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#d4af37]">1. Lore & Mito Fundacional</h2>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Diégesis</span>
                 </div>
-                <p class="text-[11px] text-muted mb-2 font-light">¿Cuál es el conflicto ontológico, la crisis fundacional y las reglas del mundo?</p>
-                <textarea id="canvas-lore" oninput="autoGuardarCanvas()" class="input-textarea w-full min-h-[145px] p-2.5 text-xs resize-y leading-relaxed" placeholder="Premisa fundacional del universo, tensión ontológica y estado del mundo (ej. colapso ambiental, yermo con escasez de agua, ciudades refugio)..."></textarea>
+                <div class="text-sm text-gray-200 whitespace-pre-line leading-relaxed">${esc(lore)}</div>
             </div>
 
-            <!-- 2. Nave Nodriza (Hub) -->
-            <div class="glass-card p-4 rounded-lg flex flex-col border border-accent/40 bg-accent/[0.04]">
-                <div class="flex items-center justify-between mb-1">
-                    <h4 class="text-xs font-bold uppercase text-accent tracking-wide">2. Nave Nodriza (Hub Central)</h4>
-                    <span class="text-[10px] font-mono text-muted">Convergencia</span>
-                </div>
-                <p class="text-[11px] text-muted mb-2 font-light">¿Dónde converge la comunidad y se ancla la experiencia interactiva principal?</p>
-                <textarea id="canvas-hub" oninput="autoGuardarCanvas()" class="input-textarea w-full min-h-[145px] p-2.5 text-xs resize-y leading-relaxed" placeholder="Plataforma principal que articula el relato (ej. Web interactiva con mapa de escenarios, toma de decisiones éticas y monitoreo de recursos)..."></textarea>
+-gray-200 whitespace-pre-line leading-relaxed">${esc(lore)}</div>
             </div>
 
-            <!-- 3. Canales Secundarios -->
-            <div class="glass-card p-4 rounded-lg flex flex-col border border-cyanAccent/20 bg-cyanAccent/[0.02]">
-                <div class="flex items-center justify-between mb-1">
-                    <h4 class="text-xs font-bold uppercase text-cyanAccent tracking-wide">3. Canales Secundarios</h4>
-                    <span class="text-[10px] font-mono text-muted">No-redundancia</span>
+            <div class="glass-card p-6 rounded-xl border-t-2 border-t-[#f3e5ab]">
+                <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#f3e5ab]">2. Nave Nodriza (Hub Central)</h2>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Convergencia</span>
                 </div>
-                <p class="text-[11px] text-muted mb-2 font-light">¿Qué aporta cada medio complementario sin repetir la información del Hub?</p>
-                <textarea id="canvas-canales" oninput="autoGuardarCanvas()" class="input-textarea w-full min-h-[145px] p-2.5 text-xs resize-y leading-relaxed" placeholder="Nodo B: Podcast (diarios sonoros del yermo), Nodo C: Serie Web en YouTube (canon visual de rutas y consecuencias), Nodo D: Coaching táctico..."></textarea>
+                <div class="text-sm text-gray-200 whitespace-pre-line leading-relaxed">${esc(hub)}</div>
             </div>
 
-            <!-- 4. Rol del Prosumidor -->
-            <div class="glass-card p-4 rounded-lg flex flex-col border border-roseAccent/20 bg-roseAccent/[0.02]">
-                <div class="flex items-center justify-between mb-1">
-                    <h4 class="text-xs font-bold uppercase text-roseAccent tracking-wide">4. Rol del Prosumidor</h4>
-                    <span class="text-[10px] font-mono text-muted">Agencia Activa</span>
+            <div class="glass-card p-6 rounded-xl border-t-2 border-t-[#38bdf8]">
+                <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#38bdf8]">3. Canales Secundarios</h2>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Expansión No-Redundante</span>
                 </div>
-                <p class="text-[11px] text-muted mb-2 font-light">¿Cómo interviene la audiencia? Dilemas éticos, decisiones y producción textual.</p>
-                <textarea id="canvas-prosumidor" oninput="autoGuardarCanvas()" class="input-textarea w-full min-h-[145px] p-2.5 text-xs resize-y leading-relaxed" placeholder="Toma de decisiones éticas junto al personaje, gestión de recursos escasos, búsqueda de compuestos de sustento, resolución de dilemas y fanfiction..."></textarea>
+                <div class="text-sm text-gray-200 whitespace-pre-line leading-relaxed">${esc(canales)}</div>
             </div>
 
-            <!-- 5. Anclaje Pedagógico -->
-            <div class="glass-card p-4 rounded-lg flex flex-col border border-purple-500/20 bg-purple-500/[0.02]">
-                <div class="flex items-center justify-between mb-1">
-                    <h4 class="text-xs font-bold uppercase text-purple-400 tracking-wide">5. Anclaje Pedagógico</h4>
-                    <span class="text-[10px] font-mono text-muted">Competencias</span>
+            <div class="glass-card p-6 rounded-xl border-t-2 border-t-[#fb7185]">
+                <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#fb7185]">4. Rol del Prosumidor</h2>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Agencia & Decisión</span>
                 </div>
-                <p class="text-[11px] text-muted mb-2 font-light">Modelo didáctico, pensamiento complejo y articulación con problemáticas reales.</p>
-                <textarea id="canvas-pedagogia" oninput="autoGuardarCanvas()" class="input-textarea w-full min-h-[145px] p-2.5 text-xs resize-y leading-relaxed" placeholder="Modelo multimodal: lectura crítica, pensamiento complejo, análisis de caso, comprensión lectora y escritura creativa vinculados a crisis contemporáneas..."></textarea>
+                <div class="text-sm text-gray-200 whitespace-pre-line leading-relaxed">${esc(prosumidor)}</div>
             </div>
 
-            <!-- 6. Evaluación & Expansión -->
-            <div class="glass-card p-4 rounded-lg flex flex-col border border-emerald-500/20 bg-emerald-500/[0.02]">
-                <div class="flex items-center justify-between mb-1">
-                    <h4 class="text-xs font-bold uppercase text-emerald-400 tracking-wide">6. Evaluación & Expansión</h4>
-                    <span class="text-[10px] font-mono text-muted">Autenticidad</span>
+            <div class="glass-card p-6 rounded-xl border-t-2 border-t-[#c084fc]">
+                <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#c084fc]">5. Anclaje Pedagógico</h2>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Didáctica & Competencias</span>
                 </div>
-                <p class="text-[11px] text-muted mb-2 font-light">Criterios de validación comunitaria, toma de conciencia e impacto formativo.</p>
-                <textarea id="canvas-evaluacion" oninput="autoGuardarCanvas()" class="input-textarea w-full min-h-[145px] p-2.5 text-xs resize-y leading-relaxed" placeholder="Conciencia comunitaria sobre futuros sustentables vs. apocalípticos, rúbricas de desempeño por dilema ético, evidencias de aprendizaje y co-creación..."></textarea>
+                <div class="text-sm text-gray-200 whitespace-pre-line leading-relaxed">${esc(pedagogia)}</div>
             </div>
-        </div>
+
+            <div class="glass-card p-6 rounded-xl border-t-2 border-t-[#34d399]">
+                <div class="flex items-center justify-between mb-3 border-b border-white/5 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#34d399]">6. Evaluación & Expansión</h2>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Impacto Social</span>
+                </div>
+                <div class="text-sm text-gray-200 whitespace-pre-line leading-relaxed">${esc(evaluacion)}</div>
+            </div>
+        </main>
     </div>
-</section>
+
+    <footer class="glass-panel p-4 rounded-xl text-center text-xs text-gray-400 mt-8">
+        Diseñado bajo la matriz de Narrativas Transmedia (Scolari), Convergencia (Jenkins) y el Tercer Entorno (Echeverría).
+    </footer>
+</body>
+</html>`;
+
+    const blob = new Blob([standaloneHTML], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", url);
+    dlAnchor.setAttribute("download", "proyecto_transmedia_completo.html");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    URL.revokeObjectURL(url);
+    showToast("Proyecto interactivo autónomo (.html) descargado.");
+}
+
+// Inicialización de carga automática al abrir la aplicación
+window.addEventListener('DOMContentLoaded', () => {
+    cargarGuardadoCanvas();
+});
