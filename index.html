@@ -19,17 +19,17 @@
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0a0a0c',
-                        surface: '#121216',
-                        surfaceCard: '#1a1a22',
-                        accent: '#d4af37', // Gold / Amber
-                        accentLight: '#f3e5ab',
-                        accentHover: '#b59226',
-                        cyanAccent: '#38bdf8',
-                        roseAccent: '#fb7185',
-                        light: '#f1f1f5',
-                        muted: '#9ca3af',
-                        borderSubtle: 'rgba(212, 175, 55, 0.22)'
+                        dark: '#07070a', // Obsidiana profundo
+                        surface: '#0f0f15',
+                        surfaceCard: '#16161e',
+                        accent: '#00e5ff', // Cian Neón Futurista
+                        accentLight: '#ccf9ff',
+                        accentHover: '#00b8cc',
+                        cyanAccent: '#8b5cf6', // Amatista / Violeta elegante
+                        roseAccent: '#f43f5e',
+                        light: '#f8fafc',
+                        muted: '#94a3b8',
+                        borderSubtle: 'rgba(0, 229, 255, 0.22)'
                     },
                     fontFamily: {
                         editorial: ['"Playfair Display"', 'serif'],
@@ -42,11 +42,9 @@
     </script>
 
     <style>
-        /* Chosen Palette: Warm Gold & Cyber Obsidian (Dark mode #0a0a0c, Surface #121216, Accent Gold #d4af37) */
-        
         body {
-            background-color: #0a0a0c;
-            color: #f1f1f5;
+            background-color: #07070a;
+            color: #f8fafc;
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -54,15 +52,15 @@
         }
         
         .glass-panel {
-            background: rgba(18, 18, 22, 0.85);
+            background: rgba(15, 15, 21, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(212, 175, 55, 0.22);
+            border: 1px solid rgba(0, 229, 255, 0.22);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.65);
         }
 
         .glass-card {
-            background: rgba(26, 26, 34, 0.70);
+            background: rgba(22, 22, 30, 0.70);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -70,17 +68,17 @@
         }
 
         .glass-card:hover {
-            border-color: rgba(212, 175, 55, 0.45);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.12);
+            border-color: rgba(0, 229, 255, 0.45);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.12);
             transform: translateY(-2px);
         }
 
         .input-select, .input-text, .input-textarea {
             appearance: none;
-            background-color: rgba(10, 10, 12, 0.75);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background-color: rgba(7, 7, 10, 0.75);
+            border: 1px solid rgba(0, 229, 255, 0.3);
             border-radius: 6px;
-            color: #f1f1f5;
+            color: #f8fafc;
             font-family: 'Inter', sans-serif;
             transition: all 0.25s ease;
             width: 100%;
@@ -88,18 +86,18 @@
 
         .input-select:focus, .input-text:focus, .input-textarea:focus {
             outline: none;
-            border-color: #d4af37;
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+            border-color: #00e5ff;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
             background-color: rgba(15, 15, 20, 0.95);
         }
 
         .input-select option {
-            background-color: #121216;
-            color: #f1f1f5;
+            background-color: #0f0f15;
+            color: #f8fafc;
         }
 
         .glow-text {
-            text-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.35);
         }
 
         ::-webkit-scrollbar {
@@ -107,14 +105,14 @@
             height: 7px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a0a0c;
+            background: #07070a;
         }
         ::-webkit-scrollbar-thumb {
             background: #22222e;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #d4af37;
+            background: #00e5ff;
         }
 
         @keyframes fadeIn {
@@ -131,10 +129,10 @@
             user-select: none;
         }
         .tab-btn.active {
-            border-bottom: 2px solid #d4af37;
-            color: #d4af37;
+            border-bottom: 2px solid #00e5ff;
+            color: #00e5ff;
             font-weight: 600;
-            background-color: rgba(212, 175, 55, 0.08);
+            background-color: rgba(0, 229, 255, 0.08);
         }
 
         .chart-container {
@@ -148,28 +146,10 @@
         }
     </style>
 </head>
-<!-- Application Structure Plan:
-     Designed as an interactive educational dashboard for transmedia design based on Scolari, Deleuze, Jenkins, and Echeverría.
-     Features 7 navigation sections:
-     1. Generador de Biblia: Dynamic Prompt matrix builder with architectural frameworks (CO-STAR, RISEN, CRAFT, RTF) & preset prefill for projects like PANÓPTICA and ALEPH-0.
-     2. Proyecto PANÓPTICA: Complete interactive exhibit of the "Estéticas de la Fuga" transmedia project, with lore explorer, node visualizer, and an interactive adversarial design simulator.
-     3. Libro & Índice: Filterable index of Carlos Scolari's landmark 2013 book "Narrativas Transmedia", featuring live search across chapters and subtopics.
-     4. Grafo Rizomático: An interactive 2D physics simulation rendered on HTML5 Canvas representing Deleuzian lines of flight and non-hierarchical narrative nodes.
-     5. Biblioteca Teórica: Conceptual matrix comparing key authors (Scolari, Deleuze, Jenkins, Echeverría/Ubal/Píriz).
-     6. Canvas Transmedia: Editable interactive strategy board to map out transmedia projects with JSON export/import.
-     7. Ecosistema Visual: Interactive Node Architecture visualizer.
--->
-<!-- Visualization & Content Choices:
-     - Rhizomatic Graph: HTML5 Canvas 2D simulation with physics forces, interactive dragging, and color-coded node classification (Story, Prosumer, Platform). NO SVG used.
-     - Glitch Simulator: HTML5 Canvas procedural glitch counter-design generator for Panóptica adversarial pattern testing. NO SVG used.
-     - Layout & Design: Tailwind CSS grid and flex structures with responsive glassmorphic cards.
-     - Interaction: Native JavaScript event listeners, tab switching, form parameter binding, real-time index filtering, interactive canvas canvas rendering.
--->
-<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 <body class="font-sans text-light min-h-screen flex flex-col relative">
 
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-accent/5 rounded-full blur-[150px] pointer-events-none z-0"></div>
-    <div class="fixed bottom-0 right-0 w-[550px] h-[550px] bg-amber-900/10 rounded-full blur-[170px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-0 right-0 w-[550px] h-[550px] bg-indigo-900/15 rounded-full blur-[170px] pointer-events-none z-0"></div>
 
     <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
         <div class="glass-panel px-6 py-4 rounded-lg text-sm text-accent border-accent/60 flex items-center shadow-2xl">
@@ -181,7 +161,7 @@
     <nav class="sticky top-0 z-40 bg-dark/95 backdrop-blur-md border-b border-white/10 px-4 md:px-8 py-3.5">
         <div class="max-w-7xl mx-auto flex flex-col xl:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('generador')">
-                <span class="w-3 h-3 bg-accent rounded-full animate-pulse shadow-[0_0_10px_#d4af37]"></span>
+                <span class="w-3 h-3 bg-accent rounded-full animate-pulse shadow-[0_0_10px_#00e5ff]"></span>
                 <span class="font-editorial text-xl font-bold tracking-tight text-white">Educa.Tech <span class="text-accent font-light italic">| EduTransmedia</span></span>
             </div>
             
@@ -443,7 +423,7 @@
                 <div class="glass-card p-6 rounded-xl border-accent/40 my-8">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
                         <div>
-                            <span class="text-xs font-mono text-accent uppercase font-semibold">Simulador Interactivo de Praxisl</span>
+                            <span class="text-xs font-mono text-accent uppercase font-semibold">Simulador Interactivo de Praxis</span>
                             <h4 class="font-editorial text-xl text-white">Laboratorio de Inyección de Entropía (Contra-Diseño Adversarial)</h4>
                         </div>
                         <div class="flex items-center space-x-2">
@@ -774,10 +754,26 @@
                         <h2 class="font-editorial text-2xl text-white">Transmedia Planning Canvas</h2>
                         <p class="text-xs text-muted font-light mt-0.5">Matriz de diseño rápido para estructurar tu universo narrativo transmedia. Edita los campos y exporta tu plano.</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="exportarCanvasJSON()" class="px-3 py-1.5 text-xs bg-accent/20 border border-accent/40 text-accent rounded hover:bg-accent/30 transition-colors">
-                            💾 Exportar Proyecto (JSON)
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Importar -->
+                        <input type="file" id="importFile" accept=".json" class="hidden" onchange="importarCanvasJSON(event)">
+                        <button onclick="document.getElementById('importFile').click()" class="px-3 py-1.5 text-xs bg-slate-500/20 border border-slate-500/40 text-slate-300 rounded hover:bg-slate-500/30 transition-colors">
+                            📂 Importar JSON
                         </button>
+                        
+                        <!-- Múltiples Exportaciones -->
+                        <button onclick="exportarCanvasJSON()" class="px-3 py-1.5 text-xs bg-accent/20 border border-accent/40 text-accent rounded hover:bg-accent/30 transition-colors">
+                            💾 a JSON
+                        </button>
+                        <button onclick="exportarCanvasHTML()" class="px-3 py-1.5 text-xs bg-cyanAccent/20 border border-cyanAccent/40 text-cyanAccent rounded hover:bg-cyanAccent/30 transition-colors">
+                            🌐 a HTML
+                        </button>
+                        <button onclick="exportarCanvasPrompt()" class="px-3 py-1.5 text-xs bg-roseAccent/20 border border-roseAccent/40 text-roseAccent rounded hover:bg-roseAccent/30 transition-colors">
+                            🤖 a Prompt
+                        </button>
+                        
+                        <div class="w-px h-6 bg-white/20 mx-1"></div>
+                        
                         <button onclick="limpiarCanvas()" class="px-3 py-1.5 text-xs bg-white/5 border border-white/10 text-muted rounded hover:bg-white/10 transition-colors">
                             🗑️ Limpiar
                         </button>
@@ -1064,11 +1060,11 @@
             const w = glitchCanvas.width;
             const h = glitchCanvas.height;
 
-            glitchCtx.fillStyle = '#0a0a0c';
+            glitchCtx.fillStyle = '#07070a';
             glitchCtx.fillRect(0, 0, w, h);
 
             // Draw base synthetic grid
-            glitchCtx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+            glitchCtx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
             glitchCtx.lineWidth = 1;
             for(let x=0; x<w; x+=20) {
                 glitchCtx.beginPath(); glitchCtx.moveTo(x,0); glitchCtx.lineTo(x,h); glitchCtx.stroke();
@@ -1085,7 +1081,7 @@
                 const bw = 30 + Math.random() * 120;
                 const bh = 10 + Math.random() * 40;
 
-                glitchCtx.fillStyle = (i % 2 === 0) ? '#d4af37' : '#fb7185';
+                glitchCtx.fillStyle = (i % 2 === 0) ? '#00e5ff' : '#8b5cf6';
                 glitchCtx.globalAlpha = 0.6 + Math.random() * 0.4;
                 glitchCtx.fillRect(bx, by, bw, bh);
 
@@ -1143,9 +1139,9 @@
             const nodeCount = 35;
 
             const types = [
-                { color: '#d4af37', label: 'Lore', radius: 6 }, 
-                { color: '#38bdf8', label: 'Prosumidor', radius: 5 }, 
-                { color: '#fb7185', label: 'Plataforma', radius: 7 }  
+                { color: '#00e5ff', label: 'Lore', radius: 6 }, 
+                { color: '#8b5cf6', label: 'Prosumidor', radius: 5 }, 
+                { color: '#f43f5e', label: 'Plataforma', radius: 7 }  
             ];
 
             for (let i = 0; i < nodeCount; i++) {
@@ -1199,7 +1195,7 @@
                     ctxGraph.beginPath();
                     ctxGraph.moveTo(n1.x, n1.y);
                     ctxGraph.lineTo(n2.x, n2.y);
-                    ctxGraph.strokeStyle = `rgba(212, 175, 55, ${0.8 - dist/160})`;
+                    ctxGraph.strokeStyle = `rgba(0, 229, 255, ${0.8 - dist/160})`;
                     ctxGraph.stroke();
                 }
             }
@@ -1227,6 +1223,35 @@
         }
 
         // Canvas Data Helpers
+        function importarCanvasJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Asignamos los valores a los textareas, o string vacío si no existen
+                    document.getElementById('canvas-lore').value = data.lore || "";
+                    document.getElementById('canvas-hub').value = data.hub || "";
+                    document.getElementById('canvas-canales').value = data.canales || "";
+                    document.getElementById('canvas-prosumidor').value = data.prosumidor || "";
+                    document.getElementById('canvas-pedagogia').value = data.pedagogia || "";
+                    document.getElementById('canvas-evaluacion').value = data.evaluacion || "";
+                    
+                    showToast("Proyecto importado exitosamente.");
+                } catch (error) {
+                    console.error("Error al leer el archivo JSON:", error);
+                    showToast("Error: El archivo cargado no es un JSON válido.");
+                }
+                // Limpiamos el input para permitir volver a cargar el mismo archivo si se desea
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+
         function exportarCanvasJSON() {
             const data = {
                 lore: document.getElementById('canvas-lore').value,
@@ -1245,6 +1270,107 @@
             dlAnchor.click();
             dlAnchor.remove();
             showToast("Plano Transmedia exportado a JSON.");
+        }
+
+        function exportarCanvasHTML() {
+            const data = {
+                lore: document.getElementById('canvas-lore').value,
+                hub: document.getElementById('canvas-hub').value,
+                canales: document.getElementById('canvas-canales').value,
+                prosumidor: document.getElementById('canvas-prosumidor').value,
+                pedagogia: document.getElementById('canvas-pedagogia').value,
+                evaluacion: document.getElementById('canvas-evaluacion').value
+            };
+
+            const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Transmedia Exportado</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #07070a; color: #f8fafc; padding: 2rem; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; background: #16161e; padding: 2.5rem; border-radius: 12px; border: 1px solid rgba(0, 229, 255, 0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        h1 { color: #00e5ff; text-transform: uppercase; font-size: 1.8rem; border-bottom: 1px solid rgba(0,229,255,0.2); padding-bottom: 1rem; margin-bottom: 2.5rem; letter-spacing: 2px;}
+        h2 { color: #8b5cf6; font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;}
+        p { background: #0f0f15; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #00e5ff; white-space: pre-wrap; color: #94a3b8; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proyecto Narrativa Transmedia</h1>
+        
+        <h2>1. Lore & Mito Base</h2>
+        <p>${data.lore || 'Sin especificar'}</p>
+        
+        <h2>2. Nave Nodriza (Hub Central)</h2>
+        <p>${data.hub || 'Sin especificar'}</p>
+        
+        <h2>3. Canales Secundarios</h2>
+        <p>${data.canales || 'Sin especificar'}</p>
+        
+        <h2>4. Rol del Prosumidor</h2>
+        <p>${data.prosumidor || 'Sin especificar'}</p>
+        
+        <h2>5. Anclaje Pedagógico</h2>
+        <p>${data.pedagogia || 'Sin especificar'}</p>
+        
+        <h2>6. Evaluación & Expansión</h2>
+        <p>${data.evaluacion || 'Sin especificar'}</p>
+    </div>
+</body>
+</html>`;
+            
+            const dataStr = "data:text/html;charset=utf-8," + encodeURIComponent(htmlContent);
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "transmedia_proyecto.html");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast("Plano exportado como Página Web (HTML).");
+        }
+
+        function exportarCanvasPrompt() {
+            const data = {
+                lore: document.getElementById('canvas-lore').value,
+                hub: document.getElementById('canvas-hub').value,
+                canales: document.getElementById('canvas-canales').value,
+                prosumidor: document.getElementById('canvas-prosumidor').value,
+                pedagogia: document.getElementById('canvas-pedagogia').value,
+                evaluacion: document.getElementById('canvas-evaluacion').value
+            };
+
+            const promptText = `Actúa como un Diseñador Instruccional Experto y Arquitecto Transmedia. A partir de los siguientes datos estructurales de mi proyecto, expande y redacta un documento maestro ("Biblia Transmedia") altamente detallado, académico e inmersivo.
+
+1. LORE Y MITO BASE:
+${data.lore || 'No definido aún.'}
+
+2. NAVE NODRIZA (HUB CENTRAL):
+${data.hub || 'No definido aún.'}
+
+3. CANALES SECUNDARIOS:
+${data.canales || 'No definido aún.'}
+
+4. ROL DEL PROSUMIDOR:
+${data.prosumidor || 'No definido aún.'}
+
+5. ANCLAJE PEDAGÓGICO:
+${data.pedagogia || 'No definido aún.'}
+
+6. EVALUACIÓN Y EXPANSIÓN:
+${data.evaluacion || 'No definido aún.'}
+
+Por favor, entrega la salida en formato Markdown estructurado, ampliando la narrativa y sugiriendo estrategias de convergencia (basadas en Henry Jenkins) y de educación por experiencia.`;
+
+            const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(promptText);
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "transmedia_prompt.txt");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast("Proyecto estructurado y exportado como Prompt (.txt).");
         }
 
         function limpiarCanvas() {
